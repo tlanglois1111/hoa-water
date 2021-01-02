@@ -8,7 +8,7 @@ import java.util.Objects;
 
 @Data
 @Builder
-public class HOAMeterReading {
+public class HOAMeterReading implements Reading {
     private Date from;
     private Date to;
     private String meter;
@@ -29,4 +29,20 @@ public class HOAMeterReading {
     public int hashCode() {
         return Objects.hash(from, to, meter);
     }
+
+    @Override
+    public Date getReadingDate() {
+        return to;
+    }
+
+    @Override
+    public String getReadingName() {
+        return meter;
+    }
+
+    @Override
+    public long getReading() {
+        return consumption;
+    }
+
 }

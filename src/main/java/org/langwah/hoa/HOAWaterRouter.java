@@ -14,6 +14,9 @@ public class HOAWaterRouter extends RouteBuilder {
         from("file:pdf?noop=true&include=.*\\.xlsx").routeId("xlsFileRoute")
                 .transform().method("xlsStripper", "extract")
                 .to("stream:out");
+        from("file:pdf?noop=false&include=.*\\.csv").routeId("csvFileRoute")
+                .transform().method("csvGenerator", "generate")
+                .to("stream:out");
     }
 
 }

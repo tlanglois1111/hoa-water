@@ -1,4 +1,4 @@
-package org.langwah.hoa.pdf;
+package org.langwah.hoa.documents;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -60,6 +60,8 @@ public class XLSStripper {
                             }
                         }
                     } else {
+                        long previous;
+                        long current = 0;
                         for (int i=3; i<row.getPhysicalNumberOfCells(); i++) {
                             cell = row.getCell((short) i);
                             if (cell != null && cell.getCellType().equals(NUMERIC)) {
@@ -70,17 +72,20 @@ public class XLSStripper {
                                 YearMonth readingYearMonth = YearMonth.of(year, month);
                                 LocalDate from = LocalDate.of(year, month, 1);
                                 LocalDate to = LocalDate.of(year, month, readingYearMonth.lengthOfMonth());
-
+                                previous = current;
+                                current = (int) row.getCell((short) i).getNumericCellValue();
                                 PrivateMeterReading privateMeterReading = PrivateMeterReading.builder()
                                         .meter(row.getCell((short) 1).getRawValue())
                                         .address(row.getCell((short) 2).getStringCellValue())
-                                        .consumption((int) row.getCell((short) i).getNumericCellValue())
+                                        .consumption(current - previous)
                                         .from(java.sql.Date.valueOf(from))
                                         .to(java.sql.Date.valueOf(to))
+                                        .previous(previous)
+                                        .current(current)
                                         .build();
 
+
                                 waterBillService.addPrivateReading(privateMeterReading);
-                                waterBillService.takeADump();
                             }
                         }
                     }
